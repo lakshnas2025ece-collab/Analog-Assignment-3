@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Barkhausen Criterion for Oscillations – Analog Electronics</title>
+<style>
+:root{--bg:#f6f8fb;--card:#fff;--tx:#1b2430;--mu:#5a6676;--ac:#0b5fa5;--ac2:#e8f1fa;--ok:#1a7f3c;--bad:#c0392b;--bd:#d5dde8}
+@media(prefers-color-scheme:dark){:root{--bg:#10151c;--card:#182029;--tx:#e6ebf2;--mu:#9aa7b8;--ac:#6db3f2;--ac2:#1d2b3a;--ok:#4cc27a;--bad:#ff7b6b;--bd:#2c3846}}
+*{box-sizing:border-box}body{margin:0;font:16px/1.6 system-ui,Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--tx)}
+header{background:linear-gradient(135deg,#0b3d6b,#0b5fa5);color:#fff;padding:28px 5%}
+header h1{margin:.2em 0;font-size:1.9rem}header p{margin:.2em 0;opacity:.92}
+header ul{margin:.5em 0 0;padding-left:1.2em;font-size:.95rem}
+nav{position:sticky;top:0;z-index:9;background:var(--card);border-bottom:1px solid var(--bd);padding:8px 5%;display:flex;flex-wrap:wrap;gap:4px 14px;font-size:.88rem}
+nav a{color:var(--ac);text-decoration:none;font-weight:600}nav a:hover{text-decoration:underline}
+main{max-width:1050px;margin:auto;padding:10px 4% 50px}
+section{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:18px 22px;margin:22px 0;scroll-margin-top:60px}
+h2{margin-top:0;color:var(--ac);border-bottom:2px solid var(--ac2);padding-bottom:6px}h3{color:var(--ac);margin-bottom:.3em}
+.eq{background:var(--ac2);border-left:4px solid var(--ac);padding:8px 14px;margin:10px 0;font-family:Cambria,Georgia,serif;font-size:1.05rem;overflow-x:auto}
+.key{background:#fff7d6;color:#3a2f00;border-left:4px solid #e0a800;padding:8px 14px;margin:10px 0;border-radius:4px}
+.warn{background:#fdecea;color:#5a1a14;border-left:4px solid var(--bad);padding:8px 14px;margin:10px 0;border-radius:4px}
+.tw{overflow-x:auto}table{border-collapse:collapse;width:100%;margin:10px 0;font-size:.93rem}th,td{border:1px solid var(--bd);padding:6px 9px;text-align:left;vertical-align:top}th{background:var(--ac2)}
+svg,canvas{max-width:100%;height:auto;background:#fff;border:1px solid var(--bd);border-radius:6px}
+figcaption{font-size:.85rem;color:var(--mu);margin:4px 0 12px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
+details{border:1px solid var(--bd);border-radius:6px;padding:6px 12px;margin:8px 0}summary{cursor:pointer;font-weight:600}
+.q{border:1px solid var(--bd);border-radius:8px;padding:10px 14px;margin:12px 0}.q label{display:block;padding:2px 0;cursor:pointer}
+.q.c{border-color:var(--ok)}.q.w{border-color:var(--bad)}.q.u{border-color:#e0a800}.ex{display:none;margin-top:6px;font-size:.92rem}.q.done .ex{display:block}
+.tag{font-size:.72rem;background:var(--ac2);color:var(--ac);padding:1px 7px;border-radius:9px;margin-left:6px}
+button{background:var(--ac);color:#fff;border:0;border-radius:6px;padding:8px 16px;margin:4px 6px 4px 0;font-size:.95rem;cursor:pointer}button.s{background:var(--mu)}
+.res{font-weight:700;font-size:1.1rem;margin:8px 0}input[type=range]{width:min(420px,100%)}
+@media print{nav,button,input[type=range]{display:none}body{background:#fff;color:#000}section{break-inside:avoid-page;border:1px solid #999}.ex{display:block!important}}
+</style></head><body>
+<header><p>Analog Electronics · Unit: Oscillators / Feedback Oscillators · B.E./B.Tech ECE</p>
+<h1>Barkhausen Criterion for Oscillations</h1>
+<p>For students, GATE aspirants and core-electronics interview candidates · Simulation tool: Multisim</p>
+<ul><li>State and apply the magnitude (|Aβ| = 1) and phase (∠Aβ = 0°/360°) conditions</li><li>Explain startup, amplitude limiting and steady state</li><li>Compute oscillation frequencies of RC and LC oscillators</li><li>Solve GATE-style problems and answer interview questions</li></ul></header>
+<nav><a href="#intro">Introduction</a><a href="#diagrams">Diagrams</a><a href="#working">Working</a><a href="#waves">Waveforms</a><a href="#multisim">Multisim</a><a href="#maths">Equations</a><a href="#solved">Solved Problems</a><a href="#gate">GATE</a><a href="#interview">Interview</a><a href="#apps">Applications</a><a href="#quiz">Quiz</a><a href="#revision">Revision</a><a href="#notes">Notes</a></nav>
+<main>
+
+<section id="intro"><h2>1. Introduction</h2>
+<p>An <b>oscillator</b> converts DC power into a periodic AC signal <i>without any external periodic input</i>. A feedback oscillator is an amplifier (gain A) whose output is fed back through a frequency-selective network (feedback factor β) so that the returned signal reinforces the input. The <b>Barkhausen criterion</b> gives the conditions on the loop gain Aβ under which a feedback system can sustain a sinusoid at a steady amplitude.</p>
+<div class="key"><b>Barkhausen criterion:</b> at the oscillation frequency f₀, (i) magnitude |Aβ| = 1, and (ii) phase ∠Aβ = 0° (or n·360°).</div>
+<h3>Key terms</h3>
+<ul><li><b>Positive (regenerative) feedback:</b> the net feedback signal adds in phase with the input, so the total loop phase shift is 0°/360°.</li>
+<li><b>Amplifier gain A:</b> open-loop (no-feedback) gain, dimensionless (or dB).</li>
+<li><b>Feedback factor β:</b> fraction of output returned, β = V<sub>f</sub>/V<sub>o</sub>.</li>
+<li><b>Loop gain Aβ:</b> gain around the complete loop with the loop broken at one point.</li>
+<li><b>Startup:</b> |Aβ| slightly &gt; 1 so noise grows. <b>Steady state:</b> amplitude limited so effective |Aβ| = 1.</li></ul>
+<p><b>Prerequisites:</b> feedback amplifiers, op-amp gain formulas, RC phase shift, resonance of LC circuits, complex impedance.</p>
+<h3>Classification</h3>
+<div class="tw"><table><tr><th>Type</th><th>Examples</th><th>Typical range</th></tr>
+<tr><td>RC (frequency from R, C)</td><td>Wien bridge, RC phase shift</td><td>Hz – ~1 MHz (audio)</td></tr>
+<tr><td>LC (tank circuit)</td><td>Hartley, Colpitts</td><td>~100 kHz – 100s of MHz (RF)</td></tr>
+<tr><td>Crystal (quartz resonator)</td><td>Pierce, Colpitts-crystal</td><td>kHz – ~100 MHz, very stable</td></tr></table></div>
+<p>The Barkhausen criterion applies to all of them: each uses an amplifier plus a frequency-selective feedback network (RC network, LC tank, or crystal) that satisfies the phase condition at only one frequency.</p></section>
+
+<section id="diagrams"><h2>2. Diagrams</h2>
+<h3>A. Positive-feedback oscillator block diagram</h3>
+<figure><svg viewBox="0 0 640 230" width="640" role="img" aria-label="Feedback oscillator block diagram" font-family="Arial" font-size="14">
+<defs><marker id="ar" markerWidth="9" markerHeight="9" refX="8" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8z" fill="#0b5fa5"/></marker></defs>
+<g stroke="#0b5fa5" stroke-width="2" fill="none" marker-end="url(#ar)"><path d="M20,70 H110"/><path d="M150,70 H230"/><path d="M370,70 H540"/><path d="M480,70 V170 H370"/><path d="M270,170 H130 V92"/></g>
+<circle cx="130" cy="70" r="20" fill="#fff" stroke="#0b5fa5" stroke-width="2"/><text x="122" y="75" fill="#000">Σ</text>
+<rect x="230" y="40" width="140" height="60" fill="#e8f1fa" stroke="#0b5fa5" stroke-width="2"/><text x="262" y="66" fill="#000">Amplifier</text><text x="283" y="86" fill="#000">A</text>
+<rect x="150" y="145" width="140" height="50" fill="#e8f1fa" stroke="#0b5fa5" stroke-width="2" transform="translate(0,0)"/>
+<text x="170" y="167" fill="#000">Feedback β(jω)</text><text x="170" y="184" fill="#000" font-size="12">(frequency selective)</text>
+<text x="20" y="58" fill="#000">V<tspan font-size="10" dy="3">i</tspan><tspan dy="-3"> = 0 (no external input)</tspan></text><text x="545" y="75" fill="#000">V<tspan font-size="10" dy="3">o</tspan></text>
+<text x="138" y="125" fill="#000">V<tspan font-size="10" dy="3">f</tspan><tspan dy="-3"> = βV</tspan><tspan font-size="10" dy="3">o</tspan></text><text x="108" y="108" fill="#000">+</text>
+<text x="400" y="30" fill="#000">Loop gain = Aβ, ∠Aβ = 0°/360°</text></svg>
+<figcaption>Fig. 1 – Positive feedback: the summing node adds V<sub>f</sub> to the (zero) external input. Closed-loop gain A/(1 − Aβ) → ∞ when Aβ = 1, i.e. output exists with no input.</figcaption></figure>
+<h3>B. Wien bridge oscillator (op-amp)</h3>
+<figure><svg viewBox="0 0 660 330" width="660" role="img" aria-label="Wien bridge oscillator circuit" font-family="Arial" font-size="13">
+<g stroke="#000" stroke-width="2" fill="none"><path d="M270,110 L270,60 L400,150 L270,240 L270,190"/><path d="M270,110 H230"/><path d="M270,190 H230"/>
+<path d="M400,150 H600"/><path d="M500,150 V270 H330 V190"/><path d="M330,190 V210 H230"/><path d="M230,210 V190"/>
+<path d="M230,110 V270"/></g>
+<text x="276" y="106">+</text><text x="278" y="196">−</text>
+<g stroke="#000" stroke-width="2" fill="none">
+<path d="M600,150 V20 H60 V60"/><path d="M60,60 h-6 l12 10 l-12 10 l12 10 l-12 10 h6" /><path d="M60,100 V120"/>
+</g>
+<text x="20" y="85">R₁</text>
+<g stroke="#000" stroke-width="2" fill="none"><path d="M60,120 H80 M80,108 V132 M92,108 V132 M92,120 H130 V110 H230"/></g>
+<text x="64" y="145">C₁</text>
+<g stroke="#000" stroke-width="2" fill="none"><path d="M150,110 V190 M170,110 V160 l-8,6 l16,10 l-16,10 l16,10 l-8,6 V190"/></g>
+<text x="120" y="215">C₂</text><text x="178" y="170">R₂</text>
+<g stroke="#000" stroke-width="2" fill="none"><path d="M150,110 V135 M138,135 H162 M138,147 H162 M150,147 V190"/><path d="M130,270 H230 M150,190 V270"/><path d="M170,190 V270"/></g>
+<text x="105" y="250" font-size="11">Series R₁–C₁ (from V<tspan font-size="9" dy="3">o</tspan><tspan dy="-3">)</tspan></text>
+<g stroke="#000" stroke-width="2" fill="none"><path d="M500,220 V270"/><path d="M500,190 V150"/></g>
+<text x="508" y="205">R<tspan font-size="9" dy="3">f</tspan></text><text x="340" y="262">R<tspan font-size="9" dy="3">g</tspan><tspan dy="-3"> to GND</tspan></text>
+<text x="602" y="146">V<tspan font-size="9" dy="3">o</tspan></text><text x="300" y="150" font-size="12">Op-amp</text>
+<text x="290" y="45" font-size="11">+V<tspan font-size="9" dy="3">CC</tspan></text><text x="290" y="262" font-size="11">−V<tspan font-size="9" dy="3">EE</tspan></text>
+<text x="30" y="310" font-size="12">Schematic outline only – see connection list below for the exact topology.</text></svg>
+<figcaption>Fig. 2 – Wien bridge oscillator (schematic outline). The exact connections are listed in the table below; use the table when building the circuit.</figcaption></figure>
+<div class="key"><b>Exact topology (use this when drawing/building):</b> Non-inverting op-amp. Series arm: V<sub>o</sub> → R₁ → C₁ → node X (to the <b>+</b> input). Parallel arm: node X → (R₂ ∥ C₂) → ground. Gain network: V<sub>o</sub> → R<sub>f</sub> → node Y (to the <b>−</b> input) → R<sub>g</sub> → ground. Supplies ±V<sub>CC</sub>. Choose R₁ = R₂ = R, C₁ = C₂ = C, and R<sub>f</sub> ≥ 2R<sub>g</sub>.</div>
+<div class="tw"><table><tr><th>Component</th><th>Function</th></tr>
+<tr><td>Op-amp</td><td>Non-inverting amplifier, 0° phase shift, gain A = 1 + R<sub>f</sub>/R<sub>g</sub></td></tr>
+<tr><td>R₁–C₁ (series), R₂∥C₂ (parallel)</td><td>Lead-lag network: frequency-selective positive feedback to the + input; zero phase and β = 1/3 at f₀</td></tr>
+<tr><td>R<sub>f</sub>, R<sub>g</sub></td><td>Set amplifier gain; negative feedback that fixes A</td></tr>
+<tr><td>Amplitude stabilizer (lamp, diodes or JFET in R<sub>f</sub>/R<sub>g</sub>)</td><td>Reduces gain as amplitude grows so |Aβ| settles at 1</td></tr>
+<tr><td>±V<sub>CC</sub> supplies</td><td>Provide energy and set the clipping limits</td></tr></table></div>
+<p><b>Barkhausen check:</b> amplifier phase 0°; lead-lag phase 0° at ω₀ = 1/RC; β(ω₀) = 1/3 so A = 3 gives |Aβ| = 1.</p></section>
+
+<section id="working"><h2>3. Working Principle</h2>
+<ol><li><b>Noise:</b> thermal/switch-on transients contain components at all frequencies, including f₀.</li>
+<li><b>Selection:</b> only at f₀ does the feedback network return the signal in phase (loop phase 0°/360°).</li>
+<li><b>Amplification:</b> the amplifier boosts the component; the network feeds back a fraction β.</li>
+<li><b>Growth:</b> if |Aβ| &gt; 1 the returned signal exceeds the original, so amplitude builds up each pass.</li>
+<li><b>Limiting:</b> supply rails or a stabilizer reduce the effective gain until the average |Aβ| = 1 and the amplitude is steady.</li></ol>
+<div class="tw"><table><tr><th>Loop gain</th><th>Behaviour</th></tr>
+<tr><td>|Aβ| &lt; 1 (phase 0°)</td><td>Each pass is smaller: oscillation <b>decays</b>.</td></tr>
+<tr><td>|Aβ| = 1</td><td>Ideal <b>sustained</b> oscillation at constant amplitude (marginal).</td></tr>
+<tr><td>|Aβ| &gt; 1</td><td>Amplitude <b>grows</b> during startup until nonlinearity/amplitude control reduces the effective gain to 1.</td></tr></table></div>
+<div class="warn"><b>Ideal vs. practical:</b> |Aβ| = 1 exactly is unstable in practice (component tolerance, temperature and ageing drift it either way). Real oscillators are designed with |Aβ| slightly &gt; 1 at startup, plus an amplitude stabilizer. Barkhausen is a <b>necessary</b> condition; it is <b>not sufficient</b> (it does not guarantee startup, stable amplitude, or low distortion).</div>
+<h3>Common misconceptions</h3>
+<ul><li>"Aβ = 1 at startup" – wrong; startup needs &gt; 1.</li><li>"Feedback must be positive in sign" – what matters is total loop phase 0°/360°, e.g. 180° amplifier + 180° network.</li><li>"An external signal is needed" – only noise is needed.</li><li>Phase of 360° ≡ 0°.</li></ul>
+<p><b>Advantages:</b> simple design rule, applies to every feedback oscillator. <b>Limitations:</b> linear analysis only; ignores amplitude limiting, loading, and tolerance.</p></section>
+
+<section id="waves"><h2>4. Waveforms (illustrative, not Multisim results)</h2>
+<p>Adjust the loop gain |Aβ| to see the effect (phase assumed 0°). The amplitude is clipped at ±1 to model supply saturation.</p>
+<p>|Aβ| = <b id="gv">1.05</b> <input type="range" id="gs" min="0.9" max="1.2" step="0.01" value="1.05"></p>
+<canvas id="cw" width="800" height="240"></canvas><figcaption>Fig. 3 – Illustrative time response. Below 1 → decay; above 1 → growth then clipping (steady amplitude set by nonlinearity).</figcaption>
+<div class="grid"><div><canvas id="c1" width="400" height="170"></canvas><figcaption>Fig. 4 – |Aβ| = 0.95 decaying (illustrative)</figcaption></div><div><canvas id="c2" width="400" height="170"></canvas><figcaption>Fig. 5 – |Aβ| = 1.00 sustained (illustrative)</figcaption></div></div>
+<h3>Loop-gain frequency response – Wien bridge with A = 3 (calculated)</h3>
+<canvas id="cb" width="800" height="300"></canvas><figcaption>Fig. 6 – Calculated from β(jω) = 1/[3 + j(x − 1/x)], x = ω/ω₀. |Aβ| = 1 and phase = 0° coincide at x = 1 only. Dashed line = unity (0 dB) / 0°.</figcaption>
+<p><i>No Multisim screenshot was attached, so no actual simulation image or measurement is shown; all figures here are illustrative or calculated.</i></p></section>
+
+<section id="multisim"><h2>5. Multisim Simulation Guide</h2>
+<ol><li><b>Construct:</b> place a 741/LM324 (or virtual op-amp) and build the Wien bridge per the connection list. Example: R₁ = R₂ = 10 kΩ, C₁ = C₂ = 16 nF → f₀ ≈ 995 Hz.</li>
+<li><b>Gain network:</b> R<sub>g</sub> = 10 kΩ, R<sub>f</sub> ≈ 20.5–21 kΩ (use a potentiometer) giving A slightly above 3; add two anti-parallel diodes across part of R<sub>f</sub> for amplitude control.</li>
+<li><b>Power:</b> ±12 V DC sources, with a common ground.</li>
+<li><b>Transient analysis:</b> Simulate → Analyses → Transient; end time ≈ 50 ms; tick "Set initial conditions" to <i>Calculate DC operating point</i> / user-defined with a small nonzero node voltage if needed to kick-start.</li>
+<li><b>Run &amp; observe:</b> view V<sub>o</sub> on the Grapher or oscilloscope; expect growth then constant amplitude.</li>
+<li><b>Frequency:</b> use cursors to measure one period T; f = 1/T. Compare with 1/(2πRC).</li>
+<li><b>Verify Barkhausen:</b> break the loop at the + input, drive with an AC source, and use AC Analysis (Bode plotter): check |Aβ| ≈ 0 dB and phase ≈ 0° at f₀.</li>
+<li><b>Troubleshoot:</b> no oscillation → increase R<sub>f</sub>; clipped/distorted → reduce R<sub>f</sub> or add limiter; wrong frequency → check R and C values; flat output → add initial condition/noise.</li></ol></section>
+
+<section id="maths"><h2>6. Equations and Derivations</h2>
+<h3>A. Feedback and loop gain</h3>
+<p>For positive feedback: V<sub>o</sub> = A(V<sub>i</sub> + βV<sub>o</sub>) ⇒</p>
+<div class="eq">A<sub>f</sub> = V<sub>o</sub>/V<sub>i</sub> = A / (1 − Aβ)</div>
+<p>Characteristic equation: 1 − Aβ(jω) = 0. For a nonzero V<sub>o</sub> with V<sub>i</sub> = 0, the denominator must vanish, so Aβ = 1 + j0:</p>
+<div class="eq">|Aβ| = 1 &nbsp;&nbsp; and &nbsp;&nbsp; ∠Aβ = 0°, ±360°, …</div>
+<p>Limiting cases: Aβ &lt; 1 → finite gain, decays; Aβ → 1 → A<sub>f</sub> → ∞. Equivalent: amplifier gain |A| = 1/|β| at f₀. In decibels: 20 log|A| + 20 log|β| = 0 dB. Variables are dimensionless (gain in dB).</p>
+<h3>B. RC phase-shift oscillator (3 equal sections)</h3>
+<div class="eq">f₀ = 1/(2πRC√6) &nbsp;&nbsp; |β| = 1/29 &nbsp;&nbsp; |A|<sub>min</sub> = 29 (inverting, 180°)</div>
+<p>Each RC section gives up to 90°; three sections give 180° at the frequency where the network phase is 180°, which together with the inverting amplifier gives 360°. (Assumption: ideal, with the last R accounted for in the network; real amplifiers loading the network change the factor 29.)</p>
+<h3>C. Wien bridge (equal R, C)</h3>
+<p>β(jω) = Z₂/(Z₁+Z₂), with Z₁ = R + 1/jωC, Z₂ = R/(1+jωRC). This simplifies to</p>
+<div class="eq">β = 1 / [3 + j(ωRC − 1/ωRC)]</div>
+<p>The imaginary part is zero when ωRC = 1 ⇒</p>
+<div class="eq">f₀ = 1/(2πRC), &nbsp; β = 1/3, &nbsp; A = 1 + R<sub>f</sub>/R<sub>g</sub> = 3 ⇒ R<sub>f</sub> = 2R<sub>g</sub></div>
+<h3>D. LC oscillators</h3>
+<div class="eq">Colpitts: f₀ = 1/(2π√(L·C<sub>eq</sub>)), C<sub>eq</sub> = C₁C₂/(C₁+C₂)<br>Hartley: f₀ = 1/(2π√(L<sub>eq</sub>·C)), L<sub>eq</sub> = L₁ + L₂ + 2M</div>
+<p>The inductor and capacitor exchange energy at resonance; the tank sets the frequency and the amplifier replenishes losses. For a BJT-type Colpitts / Hartley, the requirement is approximately h<sub>fe</sub> ≥ C₂/C₁ (Colpitts) and L₁/L₂ (Hartley), subject to the transistor configuration and loading.</p>
+<h3>E. Gain equations</h3>
+<div class="eq">A = V<sub>o</sub>/V<sub>i</sub>; &nbsp; A<sub>dB</sub> = 20 log₁₀|A|; &nbsp; β = V<sub>f</sub>/V<sub>o</sub>; &nbsp; (Aβ)<sub>dB</sub> = A<sub>dB</sub> + β<sub>dB</sub> = 0 dB</div></section>
+
+<section id="solved"><h2>7. Solved Problems</h2>
+<details open><summary>Example 1 (basic) – Can this oscillate?</summary>
+<p>An inverting amplifier has A = −50 and the feedback network gives β = −0.02 at f₀. <b>Find:</b> Aβ, and whether sustained oscillation is possible.</p>
+<p>Aβ = (−50)(−0.02) = +1.0 ⇒ |Aβ| = 1, phase 0° (the two 180° shifts add to 360°).</p>
+<p><b>Answer:</b> Barkhausen conditions are satisfied. In practice use a slightly larger gain for startup.</p></details>
+<details><summary>Example 2 – Frequency of a Wien bridge</summary>
+<p>R = 10 kΩ, C = 16 nF. f₀ = 1/(2πRC) = 1/(2π × 10×10³ × 16×10⁻⁹) = 1/(1.005×10⁻³) ≈ <b>995 Hz</b>. Required gain = 3 ⇒ R<sub>f</sub> = 2R<sub>g</sub>.</p></details>
+<details><summary>Example 3 (GATE-style) – RC phase shift design</summary>
+<p>Three-section RC oscillator, R = 1 kΩ, C = 100 nF. f₀ = 1/(2π × 10³ × 10⁻⁷ × 2.449) = 1/(1.539×10⁻³) ≈ <b>650 Hz</b>. With an inverting op-amp whose input resistor equals R = 1 kΩ, R<sub>f</sub> ≥ 29R = <b>29 kΩ</b>.</p>
+<p><b>Shortcut:</b> f₀ = 0.0650/RC for the three-section phase-shift network (RC product in seconds); 0.065/10⁻⁴ = 650 Hz ✓.</p></details>
+<details><summary>Example 4 (LC) – Colpitts frequency</summary>
+<p>L = 1 mH, C₁ = C₂ = 2 nF ⇒ C<sub>eq</sub> = 1 nF. f₀ = 1/(2π√(10⁻³ × 10⁻⁹)) = 1/(2π × 10⁻⁶) ≈ <b>159 kHz</b>.</p></details></section>
+
+<section id="gate"><h2>8. GATE Preparation</h2>
+<p>These are <b>original practice questions</b>, not actual previous-year GATE questions.</p><div id="gq"></div>
+<button onclick="chk('gq')">Check Answers</button><button class="s" onclick="rst('gq')">Reset</button><div class="res" id="gq_r"></div></section>
+
+<section id="interview"><h2>9. Interview Preparation</h2><div id="iq"></div>
+<div class="key"><b>Industry perspective:</b> In practice engineers rarely build oscillators from Barkhausen alone: they run loop-gain (stb/AC) analysis, check startup margin (typically 2–3× gain), temperature and process corners, and phase noise. Crystal oscillators are verified for negative resistance and drive level.</div></section>
+
+<section id="apps"><h2>10. Applications and Industry Relevance</h2>
+<ul><li><b>Clock generation:</b> crystal oscillators for microcontrollers, FPGAs and SoCs.</li><li><b>Communication:</b> local oscillators (LC/VCO) in RF transmitters and receivers.</li><li><b>Signal generators:</b> Wien bridge audio generators, test equipment.</li><li><b>Instrumentation, timers, audio tone generators.</b></li></ul>
+<p><b>Challenges:</b> startup failure, amplitude drift, temperature stability, phase noise, parasitic capacitance. <b>Roles:</b> analog/RF design, hardware validation, embedded hardware, test engineering. Barkhausen lets engineers design the loop, estimate frequency, and diagnose "no oscillation" (loop gain too low or phase wrong) or "distortion" (gain too high).</p></section>
+
+<section id="quiz"><h2>11. Interactive Quiz (10 questions)</h2><div id="tq"></div>
+<button onclick="chk('tq')">Check Answers</button><button class="s" onclick="rst('tq')">Reset Quiz</button><div class="res" id="tq_r"></div></section>
+
+<section id="revision"><h2>12. Revision Materials</h2>
+<div class="key"><b>Last-minute:</b> Magnitude |Aβ| = 1 → feedback restores exactly the signal needed (no growth/decay). Phase ∠Aβ = 0°/360° → feedback reinforces. Startup uses |Aβ| &gt; 1.</div>
+<h3>Formula sheet</h3>
+<div class="tw"><table><tr><th>Oscillator</th><th>f₀</th><th>Gain condition</th></tr>
+<tr><td>Wien bridge</td><td>1/(2πRC)</td><td>A ≥ 3</td></tr><tr><td>RC phase shift (3 sections)</td><td>1/(2πRC√6)</td><td>|A| ≥ 29</td></tr>
+<tr><td>Colpitts</td><td>1/(2π√(L C₁C₂/(C₁+C₂)))</td><td>≈ C₂/C₁ (BJT)</td></tr><tr><td>Hartley</td><td>1/(2π√((L₁+L₂+2M)C))</td><td>≈ L₁/L₂ (BJT)</td></tr></table></div>
+<h3>Comparisons</h3>
+<div class="tw"><table><tr><th>Item</th><th>Compared</th></tr>
+<tr><td>Amplifier vs oscillator</td><td>Amplifier needs an input; oscillator needs none, uses positive feedback and a frequency-selective network.</td></tr>
+<tr><td>Positive vs negative feedback</td><td>Positive (loop phase 0°) increases gain/instability – used in oscillators; negative reduces gain, stabilizes and widens bandwidth.</td></tr>
+<tr><td>RC vs LC</td><td>RC: low frequencies (audio), compact, tunable; LC: radio frequency, higher Q.</td></tr>
+<tr><td>Wien vs RC phase shift</td><td>Wien: gain 3, β = 1/3, non-inverting, tunable with a dual pot. Phase shift: gain 29, inverting, harder to tune.</td></tr>
+<tr><td>Startup vs steady state</td><td>Startup: |Aβ| &gt; 1, amplitude growing. Steady state: effective |Aβ| = 1, amplitude constant.</td></tr></table></div>
+<h3>Troubleshooting</h3><p>No oscillation: gain low, phase error, loading, or no kick-start. Clipping: gain too high. Frequency drift: poor component stability – use a crystal.</p>
+<p><b>Memory aid:</b> Wien = "3 and 1/3"; phase shift = "29, 1/29, √6".</p></section>
+
+<section id="notes"><h2>13. Assumptions and Limitations</h2>
+<ul><li>No Multisim screenshot was attached, so no simulation image or result is embedded; waveforms are illustrative and the Bode plot is calculated.</li>
+<li>Figure 2 is a schematic outline; the exact topology is in the connection list.</li>
+<li>Analysis assumes ideal op-amps and linear operation; practical gain figures (29, 3) change with loading and tolerance.</li></ul></section>
+</main>
+<script>
+const $=s=>document.getElementById(s);
+const G=[
+["Inverting amplifier A = −50 and β = −0.02 at f₀. Do Barkhausen conditions hold?",["|Aβ| = 1, phase 0°: yes","|Aβ| = 1, phase 180°: no","|Aβ| = 0.04: no","Aβ = −1: yes"],0,"Aβ = (−50)(−0.02) = +1, phase 0° ⇒ satisfied. Option b/d wrongly use the signs separately.","Easy"],
+["A CE amplifier gives 180° phase shift. What must the feedback network give for oscillation?",["0°","90°","180°","270°"],2,"Total loop phase must be 360°, so the network supplies 180°.","Easy"],
+["A three-section RC oscillator uses R = 10 kΩ at the inverting-amp input. Minimum R<sub>f</sub>?",["29 kΩ","100 kΩ","290 kΩ","10 kΩ"],2,"|A| = 29 ⇒ R<sub>f</sub> = 29R = 290 kΩ.","Moderate"],
+["Wien bridge oscillator with R<sub>g</sub> = 10 kΩ. Required R<sub>f</sub> for A = 3?",["10 kΩ","20 kΩ","30 kΩ","5 kΩ"],1,"A = 1 + R<sub>f</sub>/R<sub>g</sub> = 3 ⇒ R<sub>f</sub> = 2R<sub>g</sub> = 20 kΩ.","Moderate"],
+["Wien bridge with R = 1.59 kΩ, C = 100 nF. f₀ ≈ ?",["100 Hz","1 kHz","10 kHz","1.59 kHz"],1,"f = 1/(2π·1590·10⁻⁷) ≈ 1001 Hz.","Moderate"],
+["Aβ = 1.2∠0° at f₀ in a real circuit with ±12 V supply. What happens?",["Decays to zero","Constant amplitude with no limiting","Grows until nonlinearity limits the amplitude","Frequency doubles"],2,"|Aβ| &gt; 1 grows; saturation reduces the effective gain to 1.","Moderate"],
+["Hartley oscillator: L₁ = L₂ = 0.5 mH, M = 0.1 mH (aiding), C = 1 nF. f₀ ≈ ?",["159 kHz","145 kHz","225 kHz","106 kHz"],1,"L<sub>eq</sub> = 0.5+0.5+0.2 = 1.2 mH; f = 1/(2π√(1.2×10⁻¹²)) ≈ 145 kHz. 159 kHz ignores M.","Difficult"],
+["A = 10, β = +0.08 (positive feedback). Closed-loop gain?",["12.5","50","0.8","∞"],1,"A<sub>f</sub> = 10/(1 − 0.8) = 50. Aβ = 0.8 &lt; 1, so no oscillation.","Moderate"],
+["A Wien bridge has gain 3.2 at startup. What is needed for a stable amplitude?",["Increase gain further","Amplitude control reduces effective gain to 3","Change β to 1/2","Nothing; it is stable"],1,"Aβ = 3.2/3 ≈ 1.07 grows; a limiter (lamp/diodes) must reduce gain to 3.","Difficult"],
+["Which statement is correct?",["Barkhausen conditions guarantee startup","Barkhausen is necessary but not sufficient for stable oscillation","|Aβ| = 1 at any frequency suffices","Phase is irrelevant"],1,"Startup margin, amplitude control and the phase condition at the same frequency are also needed.","Difficult"]];
+const T=[
+["Barkhausen magnitude condition is",["|Aβ| = 0","|Aβ| = 1","|Aβ| = ∞","|Aβ| = 2"],1,"Loop gain magnitude is 1."],
+["Phase condition is",["∠Aβ = 90°","∠Aβ = 180°","∠Aβ = 0° or 360°","∠Aβ = 270°"],2,"The feedback must reinforce the signal."],
+["Wien bridge R = 10 kΩ, C = 16 nF: f₀ ≈",["995 Hz","159 Hz","10 kHz","6.3 kHz"],0,"1/(2π·10⁴·16×10⁻⁹) ≈ 995 Hz."],
+["Required amplifier gain of Wien bridge",["1","3","29","0.33"],1,"β = 1/3 ⇒ A = 3."],
+["Minimum gain of 3-section RC phase-shift oscillator",["3","10","29","100"],2,"|β| = 1/29."],
+["RC phase shift R = 1 kΩ, C = 100 nF. f₀ ≈",["650 Hz","1.6 kHz","159 Hz","1 kHz"],0,"1/(2πRC√6) ≈ 650 Hz."],
+["If |Aβ| &lt; 1 with 0° phase, oscillation",["grows","decays","stays constant","doubles in frequency"],1,"Each pass is smaller."],
+["For reliable startup, the loop gain should be",["slightly &gt; 1","exactly 1","&lt; 1","0"],0,"Growth from noise needs &gt; 1; stabilization then brings it to 1."],
+["Colpitts: L = 1 mH, C₁ = C₂ = 2 nF. f₀ ≈",["159 kHz","79.6 kHz","318 kHz","22.5 kHz"],0,"C<sub>eq</sub> = 1 nF, f = 1/(2π·10⁻⁶) ≈ 159 kHz."],
+["Does satisfying Barkhausen guarantee oscillation?",["Yes always","No, it is necessary but not sufficient","Only for LC","Only for RC"],1,"Startup and amplitude control matter too."]];
+const I=[
+["What is the Barkhausen criterion?","At the oscillation frequency, loop gain magnitude |Aβ| = 1 and loop phase is 0°/360°."],
+["Two conditions for sustained oscillation?","|Aβ| = 1 and ∠Aβ = 0° (n·360°) at the same frequency."],
+["Why positive feedback?","Positive (regenerative) feedback returns a signal in phase with the input so the output can be self-sustaining; negative feedback opposes it."],
+["Loop gain &gt; 1 / &lt; 1?","&gt; 1: amplitude grows until limited by nonlinearity. &lt; 1: amplitude decays."],
+["Why is noise important?","Noise supplies the initial component at f₀ that the loop amplifies; no external signal is needed."],
+["Startup vs steady state?","Startup: |Aβ| &gt; 1, growing. Steady state: nonlinear limiting makes the effective |Aβ| = 1."],
+["Why 360° phase?","360° ≡ 0°, so the feedback adds in phase and reinforces itself."],
+["How to verify in Multisim?","Break the loop, run AC analysis, check |Aβ| ≈ 0 dB and phase ≈ 0° at f₀; also run transient and measure f = 1/T."],
+["Why amplitude stabilization?","Gain drifts with temperature and tolerance; without control the output either dies or saturates and distorts."],
+["Amplifier vs oscillator?","An amplifier needs an input and uses (mostly) negative feedback; an oscillator needs none and uses frequency-selective positive feedback."],
+["Is Barkhausen sufficient?","No. It is necessary, not sufficient: need startup margin, stability of amplitude, and the phase condition satisfied at the frequency where |Aβ| ≥ 1. It is also linear analysis."],
+["Debug: no oscillation, what next?","Check supplies and gain (R<sub>f</sub>), phase of the loop, loading of the network, component values, and provide an initial kick."]];
+$('iq').innerHTML=I.map((x,i)=>`<details><summary>Q${i+1}. ${x[0]}</summary><p>${x[1]}</p></details>`).join('');
+function build(id,D,tag){$(id).innerHTML=D.map((q,i)=>`<div class="q" id="${id}${i}"><b>${i+1}. ${q[0]}</b>${tag?`<span class="tag">${q[4]}</span>`:''}${q[1].map((o,j)=>`<label><input type="radio" name="${id}${i}" value="${j}"> ${'ABCD'[j]}. ${o}</label>`).join('')}<div class="ex"></div></div>`).join('')}
+const S={gq:G,tq:T};build('gq',G,1);build('tq',T,0);
+function chk(id){let s=0,u=0;S[id].forEach((q,i)=>{const d=$(id+i),sel=d.querySelector('input:checked'),e=d.querySelector('.ex');d.classList.remove('c','w','u');d.classList.add('done');
+if(!sel){u++;d.classList.add('u');e.innerHTML='⚠ Unanswered. Correct: '+'ABCD'[q[2]]+'. '+q[3]}else if(+sel.value===q[2]){s++;d.classList.add('c');e.innerHTML='✔ Correct. '+q[3]}else{d.classList.add('w');e.innerHTML='✘ Incorrect (correct: '+'ABCD'[q[2]]+'). '+q[3]}});
+$(id+'_r').textContent=`Score: ${s}/${S[id].length} (${Math.round(100*s/S[id].length)}%) · Unanswered: ${u}`}
+function rst(id){S[id].forEach((q,i)=>{const d=$(id+i);d.classList.remove('c','w','u','done');d.querySelectorAll('input').forEach(r=>r.checked=false)});$(id+'_r').textContent=''}
+function wave(cv,g,n,sat){const c=cv.getContext('2d'),W=cv.width,H=cv.height;c.clearRect(0,0,W,H);c.fillStyle='#fff';c.fillRect(0,0,W,H);c.strokeStyle='#bbb';c.beginPath();c.moveTo(0,H/2);c.lineTo(W,H/2);c.stroke();
+c.strokeStyle='#0b5fa5';c.lineWidth=2;c.beginPath();let a=0.03;for(let x=0;x<W;x++){const ph=x/W*n*2*Math.PI;if(x%(W/(n*20)|0||1)===0)a*=Math.pow(g,1);let amp=Math.min(Math.max(a,0),sat?1:0.9);const y=H/2-amp*(H/2-12)*Math.sin(ph);x?c.lineTo(x,y):c.moveTo(x,y)}c.stroke()}
+function wv(cv,g,n,sat){const c=cv.getContext('2d'),W=cv.width,H=cv.height;c.fillStyle='#fff';c.fillRect(0,0,W,H);c.strokeStyle='#bbb';c.beginPath();c.moveTo(0,H/2);c.lineTo(W,H/2);c.stroke();c.strokeStyle='#0b5fa5';c.lineWidth=2;c.beginPath();
+const per=W/n,N=n*30;let a=g>=1&&g!==1?0.04:(g===1?0.7:0.9);let pts=[];for(let k=0;k<=N*4;k++){const x=k/(N*4)*W,ph=k/4/30*2*Math.PI;if(k%4===0&&k>0)a=Math.min(a*Math.pow(g,1/3.2),sat?1:1.5);const amp=Math.min(a,1);const y=H/2-amp*(H/2-10)*Math.sin(ph);k?c.lineTo(x,y):c.moveTo(x,y)}c.stroke()}
+function draw(){const g=+$('gs').value;$('gv').textContent=g.toFixed(2);wv($('cw'),g,14,1)}
+$('gs').oninput=draw;draw();wv($('c1'),0.95,12,1);wv($('c2'),1,12,1);
+function bode(){const cv=$('cb'),c=cv.getContext('2d'),W=cv.width,H=cv.height;c.fillStyle='#fff';c.fillRect(0,0,W,H);c.font='12px Arial';c.fillStyle='#000';
+const L=50,w=W-L-10,h=H/2-30;function X(x){return L+(Math.log10(x)+1)/2*w}
+[['|Aβ| (linear), A=3',20,1.1,0],['Phase (deg)',H/2+20,0,1]].forEach(([t,y0,m,p])=>{c.strokeStyle='#bbb';c.strokeRect(L,y0,w,h);c.fillStyle='#000';c.fillText(t,L+4,y0+14);c.strokeStyle='#0b5fa5';c.lineWidth=2;c.beginPath();
+for(let i=0;i<=200;i++){const x=Math.pow(10,-1+i/100),im=x-1/x,mag=3/Math.sqrt(9+im*im),ph=-Math.atan(im/3)*180/Math.PI;const v=p?(ph+90)/180:mag/m;const yy=y0+h-v*h;i?c.lineTo(X(x),yy):c.moveTo(X(x),yy)}c.stroke();
+c.setLineDash([5,4]);c.strokeStyle='#c0392b';c.beginPath();const ref=p?0.5:1/m;c.moveTo(L,y0+h-ref*h);c.lineTo(L+w,y0+h-ref*h);c.moveTo(X(1),y0);c.lineTo(X(1),y0+h);c.stroke();c.setLineDash([])});
+c.fillStyle='#000';c.fillText('x = ω/ω₀ (log, 0.1 → 10)',L+w/2-60,H-4);c.fillText('1.0 at x = 1',X(1)+4,34);c.fillText('0° at x = 1 (+90° / −90° at ends)',X(1)+4,H/2+34)}
+bode();
+addEventListener('beforeprint',()=>document.querySelectorAll('details').forEach(d=>d.open=true));
+</script></body></html>
